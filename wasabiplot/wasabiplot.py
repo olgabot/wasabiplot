@@ -12,8 +12,8 @@ import numpy as np
 
 
 INSERTION_DELETIONS = ('I', 'D')
-COVERAGE_CIGAR = ('M')
-JUNCTION_CIGAR = ('N')
+COVERAGE_CIGAR = ('M', )
+JUNCTION_CIGAR = ('N', )
 
 TEXT_KWS = dict(fontsize=6, horizontalalignment='center',
                 verticalalignment='center', backgroundcolor='w')
@@ -44,6 +44,7 @@ class WasabiPlotter(object):
 
         self.coverage = self.count_coverage()
         self.junctions = self.count_junctions()
+        import pdb; pdb.set_trace()
 
     def skip_bad_cigar(self, read):
         # Skip reads with no CIGAR string
@@ -143,8 +144,6 @@ class WasabiPlotter(object):
                         # region, skip it
                         continue
                     junctions[(junction_start, junction_stop)] += 1
-        # junctions = dict((key, np.log(value+1)/np.log(self.log_base))
-        #                  for key, value in junctions.items())
         return junctions
 
 
@@ -152,8 +151,8 @@ class WasabiPlotter(object):
         xmax = self.coverage.shape[0]
         xvalues = np.arange(0, xmax)
 
-        return ax.fill_between(xvalues, self.coverage, y2=0, linewidth=0, color=color,
-                               **kwargs)
+        return ax.fill_between(xvalues, self.coverage, y2=0, linewidth=0,
+                               color=color, **kwargs)
 
     @staticmethod
     def cubic_bezier(points, t):
