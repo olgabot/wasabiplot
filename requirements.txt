@@ -1,0 +1,7 @@
+pytest
+flake8
+coverage
+python-coveralls
+pysam==0.8.3
+HTSeq
+numpy
