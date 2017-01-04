@@ -45,8 +45,6 @@ class WasabiPlotter(object):
         self.coverage = self.count_coverage()
         self.junctions = self.count_junctions()
 
-        import pdb; pdb.set_trace()
-
     def skip_bad_cigar(self, read):
         # Skip reads with no CIGAR string
         if read.cigar is None:
