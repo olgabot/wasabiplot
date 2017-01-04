@@ -100,7 +100,7 @@ class WasabiPlotter(object):
         counts : numpy.array
             Number of reads that matched to the genome at every location
         """
-        counts = np.zeros(shape=(self.length), dtype=int)
+        counts = np.zeros(shape=self.length, dtype=int)
 
         region_reads = self.bam[self.interval]
 
@@ -108,16 +108,17 @@ class WasabiPlotter(object):
             read = self.skip_bad_cigar(read)
             if read is None:
                 continue
-            for cigar_operation in read.cigar:
+            for cigar in read.cigar:
                 # Only count where the read matched to the genome
-                if cigar_operation.type not in self.coverage_cigar:
+                if cigar.type not in self.coverage_cigar:
                     continue
-                match_start = cigar_operation.ref_iv.start
-                match_stop = cigar_operation.ref_iv.end
+                match_start = cigar.ref_iv.start - self.start
+                match_stop = cigar.ref_iv.end - self.start
 
                 if match_stop < 0:
-                    # If the match_stop is negative, that means we have the other read of the paired end read
-                    # that mapped to somewhere else in the genome
+                    # If the match_stop is negative, that means we have the
+                    # other read of the paired end read that mapped to
+                    # somewhere else in the genome
                     continue
                 match_start = max(match_start, 0)
                 match_stop = min(match_stop, self.length)
@@ -132,13 +133,13 @@ class WasabiPlotter(object):
         for read in region_reads:
             if read is None:
                 continue
-            for cigar_operation in read.cigar:
-                # N = did not match to genome and is an insertion
-                if cigar_operation.type == 'N':
-                    junction_start = cigar_operation.ref_iv.start
+            for cigar in read.cigar:
+                # N = did not match to genome and is an insertion, therefore
+                # a junction read!
+                if cigar.type == 'N':
+                    junction_start = cigar.ref_iv.start - self.start
 
-                    junction_stop = junction_start + \
-                        cigar_operation.ref_iv.length
+                    junction_stop = junction_start + cigar.ref_iv.length
 
                     if (junction_stop < 0) or (junction_stop > self.length):
                         # If any of the junctions start or end outside of the
@@ -146,7 +147,6 @@ class WasabiPlotter(object):
                         continue
                     junctions[(junction_start, junction_stop)] += 1
         return junctions
-
 
     def plot_coverage(self, color, ax, **kwargs):
         xmax = self.coverage.shape[0]
