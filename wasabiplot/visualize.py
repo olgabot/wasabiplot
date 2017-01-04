@@ -24,7 +24,8 @@ class WasabiPlotter(object):
 
     def __init__(self, bam_filename, chrom, start, stop, strand, log_base,
                  color, bad_cigar=INSERTION_DELETIONS,
-                 coverage_cigar=COVERAGE_CIGAR, junction_cigar=JUNCTION_CIGAR):
+                 coverage_cigar=COVERAGE_CIGAR, junction_cigar=JUNCTION_CIGAR,
+                 warn_skipped=True):
         self.bam_filename = bam_filename
         self.chrom = chrom
         self.start = start
@@ -35,6 +36,8 @@ class WasabiPlotter(object):
         self.bad_cigar = bad_cigar
         self.coverage_cigar = coverage_cigar
         self.junction_cigar = junction_cigar
+        self.warn_skipped = warn_skipped
+
 
         self.length = self.stop - self.start + 1
         self.coordinates = self.chrom, self.start, self.stop, self.strand
@@ -46,12 +49,19 @@ class WasabiPlotter(object):
         self.junctions = self.count_junctions()
 
     def skip_bad_cigar(self, read):
+        """Return None if the read has improper CIGAR strings
+
+        Parameters
+        ----------
+
+        """
         # Skip reads with no CIGAR string
         if read.cigar is None:
-            warnings.warn(
-                "Skipping read with no CIGAR string: {read_name} (from "
-                "{bam})".format(read_name=read.read.name,
-                                bam=self.bam_filename))
+            if self.warn_skipped:
+                warnings.warn(
+                    "Skipping read with no CIGAR string: {read_name} (from "
+                    "{bam})".format(read_name=read.read.name,
+                                    bam=self.bam_filename))
             return
 
         # Check if the read contains an insertion (I)
@@ -59,11 +69,14 @@ class WasabiPlotter(object):
         for cigar_operation in read.cigar:
             cigar = cigar_operation.type
             if cigar in self.bad_cigar:
-                warnings.warn(
-                    "Skipping read with CIGAR string {abbrev} (a base in the "
-                    "read was {full}): {read_name} (from {bam})".format(
-                        read_name=read.read.name, bam=self.bam_filename,
-                        abbrev=cigar, full=HTSeq.cigar_operation_names[cigar]))
+                if self.warn_skipped:
+                    warnings.warn(
+                        "Skipping read with CIGAR string {abbrev} (a base in "
+                        "the read was {full}): {read_name} "
+                        "(from {bam})".format(
+                            read_name=read.read.name, bam=self.bam_filename,
+                            abbrev=cigar,
+                            full=HTSeq.cigar_operation_names[cigar]))
                 return
         return read
 
@@ -220,7 +233,8 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
                color='steelblue', bad_cigar=INSERTION_DELETIONS,
                coverage_cigar=COVERAGE_CIGAR, junction_cigar=JUNCTION_CIGAR,
                ax=None, coverage_kws=None, curve_height_multiplier=0.2,
-               text_kws=TEXT_KWS, patch_kws=PATCH_KWS, **kwargs):
+               text_kws=TEXT_KWS, patch_kws=PATCH_KWS, warn_skipped=True,
+               **kwargs):
     """Get the number of reads that matched to the reference sequence
 
     Parameters
@@ -242,7 +256,8 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
 
     """
     plotter = WasabiPlotter(bam_filename, chrom, start, stop, strand, log_base,
-                            color, bad_cigar, coverage_cigar, junction_cigar)
+                            color, bad_cigar, coverage_cigar, junction_cigar,
+                            warn_skipped)
 
     if ax is None:
         ax = plt.gca()
