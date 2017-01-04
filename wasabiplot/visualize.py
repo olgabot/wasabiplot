@@ -38,7 +38,6 @@ class WasabiPlotter(object):
         self.junction_cigar = junction_cigar
         self.warn_skipped = warn_skipped
 
-
         self.length = self.stop - self.start + 1
         self.coordinates = self.chrom, self.start, self.stop, self.strand
         self.interval = HTSeq.GenomicInterval(*self.coordinates)
@@ -53,7 +52,8 @@ class WasabiPlotter(object):
 
         Parameters
         ----------
-
+        read : HTSeq.SAM_Alignment
+            A single read from a genomic alignment file
         """
         # Skip reads with no CIGAR string
         if read.cigar is None:
@@ -82,29 +82,6 @@ class WasabiPlotter(object):
 
     def count_coverage(self):
         """Get the number of reads that matched to the reference sequence
-
-        Parameters
-        ----------
-        bam_htseq : HTSeq.BAM_Reader
-            Bam file object to get reads from
-        bam_filename : str
-            Name of the bam filename for logging purposes
-        chrom : str
-            Name of the reference chromosome
-        start, stop : int
-            Genome-based locations of the start and stop regions
-        pad : int, optional
-            Add a few nucleotides to the left and right of the array for
-            visually pleasing padding. (default=10)
-        allowed_cigar : tuple of str, optional
-            Which CIGAR string flags are allowed. (default=('M') aka match)
-        bad_cigar : tuple of str, optional
-            Which CIGAR string flags are not allowed. (default=('I', 'D') aka
-            insertion and deletion)
-        offset : bool, optional
-            If True, offset the region counts so that the array starts at zero
-            and not the whole chromosome. Useful for plotting just the one region.
-            (default=True)
 
         Returns
         -------
@@ -135,9 +112,12 @@ class WasabiPlotter(object):
                 match_stop = min(match_stop, self.length)
 
                 counts[match_start:match_stop] += 1
+        if self.log_base is not None:
+            counts = np.log(counts)/np.log(self.log_base)
         return counts
 
     def count_junctions(self):
+        """"""
         junctions = Counter()
         region_reads = self.bam[self.interval]
 
@@ -162,6 +142,7 @@ class WasabiPlotter(object):
     def plot_coverage(self, color, ax, **kwargs):
         xmax = self.coverage.shape[0]
         xvalues = np.arange(0, xmax)
+        ax.set(xlim=(0, xmax))
 
         return ax.fill_between(xvalues, self.coverage, y2=0, linewidth=0,
                                color=color, **kwargs)
@@ -245,9 +226,14 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
         Name of the reference chromosome
     start, stop : int
         Genome-based locations of the start and stop regions
-    pad : int, optional
-        Add a few nucleotides to the left and right of the array for
-        visually pleasing padding. (default=10)
+    strand : '+' | '-'
+        Strand to query
+    log_base : number or None, optional
+        The base to use for log-scaling the data. e.g. 10 would have log10 data
+        If None, the data is not log-scaled. (default=10)
+    color : valid matplotlib color
+        Color to use for both the coverage and junction plotting
+
     allowed_cigar : tuple of str, optional
         Which CIGAR string flags are allowed. (default=('M') aka match)
     bad_cigar : tuple of str, optional
@@ -268,3 +254,9 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
     plotter.plot_coverage(color, ax, **coverage_kws)
     plotter.plot_junctions(ax, curve_height_multiplier=curve_height_multiplier,
                            text_kws=text_kws, patch_kws=patch_kws)
+    if log_base is not None:
+        yticks = ax.get_yticks()
+        yticklabels = ['${log_base}^{exponent}$'.format(log_base=log_base,
+                                                        exponent=ytick)
+                       for ytick in yticks]
+        ax.set(yticklabels=yticklabels)
