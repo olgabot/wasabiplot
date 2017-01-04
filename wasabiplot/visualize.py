@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-
 from collections import Counter
+import warnings
 
 import HTSeq
 import matplotlib.pyplot as plt
@@ -48,7 +48,7 @@ class WasabiPlotter(object):
     def skip_bad_cigar(self, read):
         # Skip reads with no CIGAR string
         if read.cigar is None:
-            print(
+            warnings.warn(
                 "Skipping read with no CIGAR string: {read_name} (from "
                 "{bam})".format(read_name=read.read.name,
                                 bam=self.bam_filename))
@@ -59,7 +59,7 @@ class WasabiPlotter(object):
         for cigar_operation in read.cigar:
             cigar = cigar_operation.type
             if cigar in self.bad_cigar:
-                print(
+                warnings.warn(
                     "Skipping read with CIGAR string {abbrev} (a base in the "
                     "read was {full}): {read_name} (from {bam})".format(
                         read_name=read.read.name, bam=self.bam_filename,
