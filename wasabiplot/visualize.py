@@ -38,7 +38,7 @@ class WasabiPlotter(object):
 
         self.length = self.stop - self.start + 1
         self.coordinates = self.chrom, self.start, self.stop, self.strand
-        self.interval = HTSeq.GenomicInterval(*self.interval)
+        self.interval = HTSeq.GenomicInterval(*self.coordinates)
 
         self.bam = HTSeq.BAM_Reader(self.bam_filename)
 
