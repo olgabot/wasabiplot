@@ -19,6 +19,7 @@ TEXT_KWS = dict(fontsize=6, horizontalalignment='center',
                 verticalalignment='center', backgroundcolor='w')
 PATCH_KWS = dict(facecolor='none',)
 
+
 class WasabiPlotter(object):
 
     def __init__(self, bam_filename, chrom, start, stop, strand, log_base,
@@ -35,10 +36,8 @@ class WasabiPlotter(object):
         self.coverage_cigar = coverage_cigar
         self.junction_cigar = junction_cigar
 
-
         self.length = self.stop - self.start + 1
         self.interval = self.chrom, self.start, self.stop, self.strand
-
 
         self.bam = HTSeq.BAM_Reader(self.bam_filename)
 

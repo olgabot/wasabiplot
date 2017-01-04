@@ -10,7 +10,7 @@ Tests for `wasabiplot` module.
 
 import unittest
 
-from wasabiplot import wasabiplot
+from wasabiplot import visualize
 
 
 class TestWasabiplot(unittest.TestCase):
