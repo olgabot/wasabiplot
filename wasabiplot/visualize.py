@@ -220,7 +220,7 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
                color='steelblue', bad_cigar=INSERTION_DELETIONS,
                coverage_cigar=COVERAGE_CIGAR, junction_cigar=JUNCTION_CIGAR,
                ax=None, coverage_kws=None, curve_height_multiplier=0.2,
-               text_kws=TEXT_KWS, patch_kws=PATCH_KWS):
+               text_kws=TEXT_KWS, patch_kws=PATCH_KWS, **kwargs):
     """Get the number of reads that matched to the reference sequence
 
     Parameters
@@ -248,6 +248,7 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
         ax = plt.gca()
 
     coverage_kws = {} if coverage_kws is None else coverage_kws
+    coverage_kws.update(kwargs)
 
     plotter.plot_coverage(color, ax, **coverage_kws)
     plotter.plot_junctions(ax, curve_height_multiplier=curve_height_multiplier,
