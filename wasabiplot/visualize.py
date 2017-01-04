@@ -37,12 +37,14 @@ class WasabiPlotter(object):
         self.junction_cigar = junction_cigar
 
         self.length = self.stop - self.start + 1
-        self.interval = self.chrom, self.start, self.stop, self.strand
+        self.coordinates = self.chrom, self.start, self.stop, self.strand
+        self.interval = HTSeq.GenomicInterval(*self.interval)
 
         self.bam = HTSeq.BAM_Reader(self.bam_filename)
 
         self.coverage = self.count_coverage()
         self.junctions = self.count_junctions()
+
         import pdb; pdb.set_trace()
 
     def skip_bad_cigar(self, read):
@@ -100,7 +102,7 @@ class WasabiPlotter(object):
         """
         counts = np.zeros(shape=(self.length), dtype=int)
 
-        region_reads = self.bam[HTSeq.GenomicInterval(*self.interval)]
+        region_reads = self.bam[self.interval]
 
         for read in region_reads:
             read = self.skip_bad_cigar(read)
@@ -124,8 +126,8 @@ class WasabiPlotter(object):
         return counts
 
     def count_junctions(self):
-        region_reads = self.bam[HTSeq.GenomicInterval(*self.interval)]
         junctions = Counter()
+        region_reads = self.bam[self.interval]
 
         for read in region_reads:
             if read is None:
