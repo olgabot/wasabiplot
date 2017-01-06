@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.artist import Path
 from matplotlib.patches import PathPatch
 import numpy as np
+import pandas as pd
 
 
 INSERTION_DELETIONS = ('I', 'D')
@@ -241,6 +242,9 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
         insertion and deletion)
 
     """
+    if isinstance(bam_filename, pd.Series):
+        bam_filename = bam_filename.iloc[0]
+
     plotter = WasabiPlotter(bam_filename, chrom, start, stop, strand, log_base,
                             color, bad_cigar, coverage_cigar, junction_cigar,
                             warn_skipped)
