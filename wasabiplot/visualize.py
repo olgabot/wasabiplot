@@ -226,9 +226,8 @@ class WasabiPlotter(object):
 
         # this is an odd-numbered offset, plot on the bottom
         n_junctions_already_plotted = voffset
-        voffset = voffset/2
-        print('n_junctions_already_plotted', n_junctions_already_plotted)
-        print('voffset', voffset)
+        voffset = int(voffset/2)
+
         if n_junctions_already_plotted % 2 == 1:
             left_height = 0 - (voffset * curve_height)
             right_height = 0 - (voffset * curve_height)
