@@ -11,6 +11,7 @@ from matplotlib.artist import Path
 from matplotlib.patches import PathPatch
 import numpy as np
 import pandas as pd
+import seaborn as sns
 
 
 INSERTION_DELETIONS = ('I', 'D')
@@ -307,15 +308,22 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
     plotter.plot_coverage(color, ax, **coverage_kws)
     plotter.plot_junctions(ax, curve_height_multiplier=curve_height_multiplier,
                            text_kws=text_kws, patch_kws=patch_kws)
-    if log_base is not None:
-        print(ax.get_yticks())
-        yticks = sorted(list(set([int(ytick)
-                                  for ytick in ax.get_yticks()])))
-        print('yticks', yticks)
-        # yticklabels = ['${log_base}^{{{exponent}}}$'.format(
-        #     log_base=log_base, exponent=ytick) for ytick in yticks]
-        ax.set(#yticklabels=yticklabels,
-               yticks=yticks)
+
+    # Remove bottom spine
+    sns.despine(ax, bottom=True)
+
+    # Add a zero-axis line
+    ax.hlines(0, 0, plotter.length)
+
+    # if log_base is not None:
+    #     print('ax.get_yticks()', ax.get_yticks())
+    #     yticks = sorted(list(set([int(ytick)
+    #                               for ytick in ax.get_yticks()])))
+    #     print('yticks', yticks)
+    #     # yticklabels = ['${log_base}^{{{exponent}}}$'.format(
+    #     #     log_base=log_base, exponent=ytick) for ytick in yticks]
+    #     ax.set(#yticklabels=yticklabels,
+    #            yticks=yticks)
 
     if ax.is_last_row():
         xticks = [int(x + start) for x in ax.get_xticks()]
