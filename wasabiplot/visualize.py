@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 from collections import Counter
+import operator
 import warnings
 
 import HTSeq
@@ -166,7 +167,9 @@ class WasabiPlotter(object):
 
     def plot_junctions(self, ax, curve_height_multiplier, text_kws, patch_kws):
         junction_area_counter = np.zeros(self.length)
-        for (start, stop), n_junction_reads in self.junctions.items():
+        iterator = sorted(self.junctions, key=self.junctions.get,
+                           reverse=True)
+        for (start, stop), n_junction_reads in iterator:
             left = max(start, 0)
             right = min(stop, self.length-1)
             voffset = np.max(junction_area_counter[left:right])
