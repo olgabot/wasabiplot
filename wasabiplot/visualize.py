@@ -250,7 +250,7 @@ class WasabiPlotter(object):
             plt.text(midpoint[0], midpoint[1], '{}'.format(n_reads),
                      **text_kws)
 
-        path = Path(vertices, codes)
+        path = Path(vertices, codes, clip_on=False)
 
         patch_kws['linewidth'] = np.log(n_reads + 1) / np.log(self.log_base)
         if self.color is not None:
