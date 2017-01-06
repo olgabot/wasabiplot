@@ -224,19 +224,20 @@ class WasabiPlotter(object):
         left_height = self.coverage[max(left-1, 0)]
         right_height = self.coverage[min(right+1, self.length-1)]
 
-        left_height += voffset * curve_height
-        right_height += voffset * curve_height
+        # this is an odd-numbered offset, plot on the bottom
+        if voffset % 2 == 1:
+            left_height = 0 - ((voffset - (voffset - 1)/2) * curve_height)
+            right_height = 0 - ((voffset - (voffset - 1)/2) * curve_height)
+            curve_height *= -1
+        else:
+            # Otherwise plot on top
+            left_height += (voffset - voffset/2) * curve_height
+            right_height += (voffset - voffset/2) * curve_height
 
         if start < 0:
             left_height = right_height
         if stop > self.length:
             right_height = left_height
-
-        # this is an odd-numbered offset, plot on the bottom
-        if voffset % 2 == 1:
-            left_height = 0 - (voffset * curve_height)
-            right_height = 0 - (voffset * curve_height)
-            curve_height *= -1
 
         # Bezier curves are defined by 4 points indicating the rectangle that
         # bounds the curve
