@@ -310,7 +310,7 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
                            text_kws=text_kws, patch_kws=patch_kws)
 
     # Remove bottom spine
-    sns.despine(ax, bottom=True)
+    sns.despine(ax=ax, bottom=True)
 
     # Add a zero-axis line
     ax.hlines(0, 0, plotter.length)
