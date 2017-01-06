@@ -168,8 +168,8 @@ class WasabiPlotter(object):
     def plot_junctions(self, ax, curve_height_multiplier, text_kws, patch_kws):
         junction_area_counter = np.zeros(self.length)
 
-        # Plot largest coverage junctions first
-        iterator = sorted(self.junctions, key=self.junctions.get, reverse=True)
+        # Plot smallest coverage junctions first (usually smallest coverage
+        iterator = sorted(self.junctions, key=self.junctions.get)
 
         for (start, stop) in iterator:
             n_junction_reads = self.junctions[(start, stop)]
@@ -301,7 +301,7 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
     plotter.plot_junctions(ax, curve_height_multiplier=curve_height_multiplier,
                            text_kws=text_kws, patch_kws=patch_kws)
     if log_base is not None:
-        yticks = [int(ytick) for ytick in ax.get_yticks()]
+        yticks = sorted(list(set([int(ytick) for ytick in ax.get_yticks()])))
         # yticklabels = ['${log_base}^{{{exponent}}}$'.format(
         #     log_base=log_base, exponent=ytick) for ytick in yticks]
         ax.set(#yticklabels=yticklabels,
