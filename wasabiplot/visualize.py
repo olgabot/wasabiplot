@@ -169,7 +169,6 @@ class WasabiPlotter(object):
         for (start, stop), n_junction_reads in self.junctions.items():
             left = max(start, 0)
             right = min(stop, self.length-1)
-            print(left, right)
             voffset = np.max(junction_area_counter[left:right])
             self._plot_single_junction(start, stop, left, right,
                                        n_junction_reads, ax,
