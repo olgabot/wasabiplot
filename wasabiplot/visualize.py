@@ -296,10 +296,10 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
         yticklabels = ['${log_base}^{{{exponent}}}$'.format(log_base=log_base,
                                                         exponent=ytick)
                        for ytick in yticks]
-        ax.set(yticklabels=yticklabels)
+        ax.set(yticklabels=yticklabels, yticks=yticks)
 
     if ax.is_last_row():
-        xticks = [x + start for x in ax.get_xticks()]
-        ax.set_xticklabels(xticks)
-        ax.set_xlabel('{chrom}:{start}-{stop}:{strand}'.format(
-            chrom=chrom, start=start, stop=stop, strand=strand))
+        xticks = [int(x + start) for x in ax.get_xticks()]
+        xlabel = '{chrom}:{start}-{stop}:{strand}'.format(
+            chrom=chrom, start=start, stop=stop, strand=strand)
+        ax.set(xticklabels=xticks, xlabel=xlabel)
