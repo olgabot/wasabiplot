@@ -167,9 +167,12 @@ class WasabiPlotter(object):
 
     def plot_junctions(self, ax, curve_height_multiplier, text_kws, patch_kws):
         junction_area_counter = np.zeros(self.length)
-        iterator = sorted(self.junctions, key=self.junctions.get,
-                           reverse=True)
-        for (start, stop), n_junction_reads in iterator:
+
+        # Plot largest coverage junctions first
+        iterator = sorted(self.junctions, key=self.junctions.get, reverse=True)
+
+        for (start, stop) in iterator:
+            n_junction_reads = self.junctions[(start, stop)]
             left = max(start, 0)
             right = min(stop, self.length-1)
             voffset = np.max(junction_area_counter[left:right])
