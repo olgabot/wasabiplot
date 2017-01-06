@@ -19,7 +19,8 @@ JUNCTION_CIGAR = ('N', )
 TEXT_KWS = dict(#fontsize=6,
                 horizontalalignment='center',
                 verticalalignment='center',
-                backgroundcolor='w', bbox=dict(pad=0))
+                # backgroundcolor='w',
+    bbox=dict(pad=0, facecolor='white'))
 PATCH_KWS = dict(facecolor='none',)
 
 
