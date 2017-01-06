@@ -316,18 +316,8 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
     # Add a zero-axis line
     ax.hlines(0, 0, plotter.length, linewidth=0.5, zorder=-1)
 
-    if log_base is not None:
-        print('ax.get_yticks()', ax.get_yticks())
-        yticks = sorted(list(set([int(ytick) for ytick in ax.get_yticks()
-                                  if ytick >= 0])))
-        print('yticks', yticks)
-        # yticklabels = ['${log_base}^{{{exponent}}}$'.format(
-        #     log_base=log_base, exponent=ytick) for ytick in yticks]
-        ax.set(#yticklabels=yticklabels,
-               yticks=yticks)
-
     if ax.is_last_row():
         xticks = [int(x + start) for x in ax.get_xticks()]
-        xlabel = '{chrom}:{start}-{stop}:{strand}'.format(
-            chrom=chrom, start=start, stop=stop, strand=strand)
-        ax.set(xticklabels=xticks, xlabel=xlabel)
+        # xlabel = '{chrom}:{start}-{stop}:{strand}'.format(
+        #     chrom=chrom, start=start, stop=stop, strand=strand)
+        # ax.set(xticklabels=xticks, xlabel=xlabel)
