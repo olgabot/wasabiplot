@@ -117,8 +117,8 @@ class WasabiPlotter(object):
                 match_stop = min(match_stop, self.length)
 
                 counts[match_start:match_stop] += 1
-        if self.log_base is not None:
-            counts = np.log(counts)/np.log(self.log_base)
+        # if self.log_base is not None:
+        #     counts = np.log(counts)/np.log(self.log_base)
         return counts
 
     def count_junctions(self):
@@ -294,18 +294,21 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
     if ax is None:
         ax = plt.gca()
 
+    ax.set_yscale('log', nonposy='clip')
+
     coverage_kws = {} if coverage_kws is None else coverage_kws
     coverage_kws.update(kwargs)
 
     plotter.plot_coverage(color, ax, **coverage_kws)
     plotter.plot_junctions(ax, curve_height_multiplier=curve_height_multiplier,
                            text_kws=text_kws, patch_kws=patch_kws)
-    if log_base is not None:
-        yticks = sorted(list(set([int(ytick) for ytick in ax.get_yticks()])))
-        # yticklabels = ['${log_base}^{{{exponent}}}$'.format(
-        #     log_base=log_base, exponent=ytick) for ytick in yticks]
-        ax.set(#yticklabels=yticklabels,
-               yticks=yticks)
+    # if log_base is not None:
+    #     yticks = sorted(list(set([int(ytick) for ytick in ax.get_yticks()])))
+    #     print('yticks', yticks)
+    #     # yticklabels = ['${log_base}^{{{exponent}}}$'.format(
+    #     #     log_base=log_base, exponent=ytick) for ytick in yticks]
+    #     ax.set(#yticklabels=yticklabels,
+    #            yticks=yticks)
 
     if ax.is_last_row():
         xticks = [int(x + start) for x in ax.get_xticks()]
