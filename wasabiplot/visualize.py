@@ -214,8 +214,11 @@ class WasabiPlotter(object):
         yrange = ymax - ymin
         curve_height = yrange * curve_height_multiplier
 
-        left_height = self.coverage[left-1] + voffset * curve_height
-        right_height = self.coverage[right+1] + voffset * curve_height
+        left_height = self.coverage[max(left-1, 0)]
+        right_height = self.coverage[min(right+1, self.length-1)]
+
+        left_height += voffset * curve_height
+        right_height += voffset * curve_height
 
         if start < 0:
             left_height = right_height
