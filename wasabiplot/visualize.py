@@ -225,14 +225,18 @@ class WasabiPlotter(object):
         right_height = self.coverage[min(right+1, self.length-1)]
 
         # this is an odd-numbered offset, plot on the bottom
-        if voffset % 2 == 1:
-            left_height = 0 - ((voffset - (voffset - 1)/2) * curve_height)
-            right_height = 0 - ((voffset - (voffset - 1)/2) * curve_height)
+        n_junctions_already_plotted = voffset
+        voffset = voffset/2
+        print('n_junctions_already_plotted', n_junctions_already_plotted)
+        print('voffset', voffset)
+        if n_junctions_already_plotted % 2 == 1:
+            left_height = 0 - (voffset * curve_height)
+            right_height = 0 - (voffset * curve_height)
             curve_height *= -1
         else:
             # Otherwise plot on top
-            left_height += (voffset - voffset/2) * curve_height
-            right_height += (voffset - voffset/2) * curve_height
+            left_height += voffset * curve_height
+            right_height += voffset * curve_height
 
         if start < 0:
             left_height = right_height
