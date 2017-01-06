@@ -166,7 +166,8 @@ class WasabiPlotter(object):
         return p0 * (1 - t) ** 3 + 3 * t * p1 * (1 - t) ** 2 + \
                3 * t ** 2 * (1 - t) * p2 + t ** 3 * p3
 
-    def plot_junctions(self, ax, curve_height_multiplier, text_kws, patch_kws):
+    def plot_junctions(self, ax, curve_height_multiplier, text_kws, patch_kws,
+                       annotate=True):
         junction_area_counter = np.zeros(self.length)
 
         # Plot smallest coverage junctions first (usually smallest coverage
@@ -181,12 +182,12 @@ class WasabiPlotter(object):
                                        n_junction_reads, ax,
                                        curve_height_multiplier,
                                        text_kws=text_kws, patch_kws=patch_kws,
-                                       voffset=voffset)
+                                       voffset=voffset, annotate=annotate)
             junction_area_counter[left:right] += 1
 
     def _plot_single_junction(self, start, stop, left, right, n_reads, ax=None,
                               curve_height_multiplier=0.1, text_kws=TEXT_KWS,
-                              patch_kws=PATCH_KWS, voffset=0):
+                              patch_kws=PATCH_KWS, voffset=0, annotate=True):
         """Draw a curved cubic bezier line showing the number of junctions
 
         Uses the y-axis limits to determine the curve height so make sure to
@@ -251,7 +252,7 @@ class WasabiPlotter(object):
         codes = [Path.MOVETO, Path.CURVE4, Path.CURVE4, Path.CURVE4]
         midpoint = self.cubic_bezier(vertices, 0.5)
 
-        if n_reads:
+        if n_reads and annotate:
             plt.text(midpoint[0], midpoint[1], '{}'.format(n_reads),
                      **text_kws)
 
@@ -270,7 +271,7 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
                coverage_cigar=COVERAGE_CIGAR, junction_cigar=JUNCTION_CIGAR,
                ax=None, coverage_kws=None, curve_height_multiplier=0.2,
                text_kws=TEXT_KWS, patch_kws=PATCH_KWS, warn_skipped=True,
-               **kwargs):
+               annotate=True, **kwargs):
     """Get the number of reads that matched to the reference sequence
 
     Parameters
@@ -311,7 +312,8 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
 
     plotter.plot_coverage(color, ax, **coverage_kws)
     plotter.plot_junctions(ax, curve_height_multiplier=curve_height_multiplier,
-                           text_kws=text_kws, patch_kws=patch_kws)
+                           text_kws=text_kws, patch_kws=patch_kws,
+                           annotate=annotate)
 
     # Remove bottom spine
     sns.despine(ax=ax, bottom=True)
@@ -321,6 +323,4 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
 
     if ax.is_last_row():
         xticks = [int(x + start) for x in ax.get_xticks()]
-        # xlabel = '{chrom}:{start}-{stop}:{strand}'.format(
-        #     chrom=chrom, start=start, stop=stop, strand=strand)
-        # ax.set(xticklabels=xticks, xlabel=xlabel)
+        ax.set(xticklabels=xticks)
