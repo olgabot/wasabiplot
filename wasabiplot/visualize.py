@@ -165,16 +165,19 @@ class WasabiPlotter(object):
 
     def plot_junctions(self, ax, curve_height_multiplier, text_kws, patch_kws):
         junction_area_counter = np.zeros(self.length)
-        for (left, right), n_junction_reads in self.junctions.items():
+        for (start, stop), n_junction_reads in self.junctions.items():
+            left = max(start, 0)
+            right = min(start, self.length)
             print(left, right)
             voffset = np.max(junction_area_counter[left:right])
-            self._plot_single_junction(left, right, n_junction_reads, ax,
+            self._plot_single_junction(start, stop, left, right,
+                                       n_junction_reads, ax,
                                        curve_height_multiplier,
                                        text_kws=text_kws, patch_kws=patch_kws,
                                        voffset=voffset)
             junction_area_counter[left:right] += 1
 
-    def _plot_single_junction(self, left, right, n_reads, ax=None,
+    def _plot_single_junction(self, start, stop, left, right, n_reads, ax=None,
                               curve_height_multiplier=0.1, text_kws=TEXT_KWS,
                               patch_kws=PATCH_KWS, voffset=0):
         """Draw a curved cubic bezier line showing the number of junctions
@@ -213,6 +216,11 @@ class WasabiPlotter(object):
 
         left_height = self.coverage[left-1] + voffset * curve_height
         right_height = self.coverage[right+1] + voffset * curve_height
+
+        if start < 0:
+            left_height = right_height
+        if stop > self.length:
+            right_height = left_height
 
         # Bezier curves are defined by 4 points indicating the rectangle that
         # bounds the curve
