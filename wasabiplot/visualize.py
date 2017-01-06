@@ -313,7 +313,7 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
     sns.despine(ax=ax, bottom=True)
 
     # Add a zero-axis line
-    ax.hlines(0, 0, plotter.length)
+    ax.hlines(0, 0, plotter.length, linewidth=0.5, zorder=-1)
 
     # if log_base is not None:
     #     print('ax.get_yticks()', ax.get_yticks())
