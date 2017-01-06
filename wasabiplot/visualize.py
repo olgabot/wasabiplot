@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from __future__ import print_function
 
 from collections import Counter
 import warnings
@@ -18,7 +18,8 @@ JUNCTION_CIGAR = ('N', )
 
 TEXT_KWS = dict(#fontsize=6,
                 horizontalalignment='center',
-                verticalalignment='center', backgroundcolor='w')
+                verticalalignment='center',
+                backgroundcolor='w')
 PATCH_KWS = dict(facecolor='none',)
 
 
@@ -165,7 +166,8 @@ class WasabiPlotter(object):
     def plot_junctions(self, ax, curve_height_multiplier, text_kws, patch_kws):
         junction_area_counter = np.zeros(self.length)
         for (left, right), n_junction_reads in self.junctions.items():
-            voffset = junction_area_counter[left:right].max()
+            print(left, right)
+            voffset = np.max(junction_area_counter[left:right])
             self._plot_single_junction(left, right, n_junction_reads, ax,
                                        curve_height_multiplier,
                                        text_kws=text_kws, patch_kws=patch_kws,
