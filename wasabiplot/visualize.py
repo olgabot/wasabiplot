@@ -20,7 +20,7 @@ TEXT_KWS = dict(#fontsize=6,
                 horizontalalignment='center',
                 verticalalignment='center',
                 # backgroundcolor='w',
-    bbox=dict(pad=0, facecolor='white'))
+    bbox=dict(pad=0, facecolor='white', edgecolor='none'))
 PATCH_KWS = dict(facecolor='none',)
 
 
