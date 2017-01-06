@@ -163,15 +163,18 @@ class WasabiPlotter(object):
                3 * t ** 2 * (1 - t) * p2 + t ** 3 * p3
 
     def plot_junctions(self, ax, curve_height_multiplier, text_kws, patch_kws):
+        junction_area_counter = np.zeros(self.length)
         for (left, right), n_junction_reads in self.junctions.items():
+            voffset = junction_area_counter[left:right].max()
             self._plot_single_junction(left, right, n_junction_reads, ax,
                                        curve_height_multiplier,
-                                       text_kws=text_kws,
-                                       patch_kws=patch_kws)
+                                       text_kws=text_kws, patch_kws=patch_kws,
+                                       voffset=voffset)
+            junction_area_counter[left:right] += 1
 
     def _plot_single_junction(self, left, right, n_reads, ax=None,
                               curve_height_multiplier=0.1, text_kws=TEXT_KWS,
-                              patch_kws=PATCH_KWS):
+                              patch_kws=PATCH_KWS, voffset=0):
         """Draw a curved cubic bezier line showing the number of junctions
 
         Uses the y-axis limits to determine the curve height so make sure to
@@ -179,9 +182,25 @@ class WasabiPlotter(object):
 
         Parameters
         ----------
-
+        left, right : int
+            0-based Left and right integers indicating where the junction
+            starts in this region. Not genome coordinates but the subset that
+            we care about
+        n_reads : int
+            Number of junction reads observed on this junction
+        curve_height_multiplier : float
+            When making the rectangle boundaries for the bezier curve, this
+            indicates the percentage of the plot height to use as the curve
+        text_kws : dict
+            Keyword arguments to pass to the plt.text annotator
         patch_kws : dict
-
+            Keyword arguments to pass to the patch artist for creating the
+            curve
+        voffset : int
+            Vertical offset, for when there are multiple junctions overlapping
+            in one area. Increases the starting height of the junction by one
+            curve height (found by multiplying ``curve_height_multiplier`` by
+            the y-axis range)
         """
         if ax is None:
             ax = plt.gca()
@@ -190,8 +209,11 @@ class WasabiPlotter(object):
         yrange = ymax - ymin
         curve_height = yrange * curve_height_multiplier
 
-        left_height = self.coverage[left-1]
-        right_height = self.coverage[right+1]
+        left_height = self.coverage[left-1] + voffset * curve_height
+        right_height = self.coverage[right+1] + voffset * curve_height
+
+        # Bezier curves are defined by 4 points indicating the rectangle that
+        # bounds the curve
         vertices = [(left, left_height),
                     (left, left_height + curve_height),
                     (right, right_height + curve_height),
@@ -261,7 +283,13 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
                            text_kws=text_kws, patch_kws=patch_kws)
     if log_base is not None:
         yticks = [int(ytick) for ytick in ax.get_yticks()]
-        yticklabels = ['${log_base}^{{exponent}}$'.format(log_base=log_base,
+        yticklabels = ['${log_base}^{{{exponent}}}$'.format(log_base=log_base,
                                                         exponent=ytick)
                        for ytick in yticks]
         ax.set(yticklabels=yticklabels)
+
+    if ax.is_last_row():
+        xticks = [x + start for x in ax.get_xticks()]
+        ax.set_xticklabels(xticks)
+        ax.set_xlabel('{chrom}:{start}-{stop}:{strand}'.format(
+            chrom=chrom, start=start, stop=stop, strand=strand))
