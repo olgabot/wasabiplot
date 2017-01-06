@@ -90,7 +90,7 @@ class WasabiPlotter(object):
         counts : numpy.array
             Number of reads that matched to the genome at every location
         """
-        counts = np.zeros(shape=self.length, dtype=int)
+        counts = np.ones(shape=self.length, dtype=int)
 
         region_reads = self.bam[self.interval]
 
@@ -115,7 +115,7 @@ class WasabiPlotter(object):
 
                 counts[match_start:match_stop] += 1
         if self.log_base is not None:
-            counts = np.log(counts + 1)/np.log(self.log_base)
+            counts = np.log(counts)/np.log(self.log_base)
         return counts
 
     def count_junctions(self):
