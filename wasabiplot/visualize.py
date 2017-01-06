@@ -301,7 +301,7 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
     if ax is None:
         ax = plt.gca()
 
-    ax.set_yscale('log', nonposy='clip')
+    ax.set_yscale('log')
 
     coverage_kws = {} if coverage_kws is None else coverage_kws
     coverage_kws.update(kwargs)
