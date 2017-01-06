@@ -231,6 +231,12 @@ class WasabiPlotter(object):
         if stop > self.length:
             right_height = left_height
 
+        # this is an odd-numbered offset, plot on the bottom
+        if voffset % 2 == 1:
+            left_height = 0 - (voffset * curve_height)
+            right_height = 0 - (voffset * curve_height)
+            curve_height *= -1
+
         # Bezier curves are defined by 4 points indicating the rectangle that
         # bounds the curve
         vertices = [(left, left_height),
