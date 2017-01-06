@@ -135,7 +135,7 @@ class WasabiPlotter(object):
 
                     junction_stop = junction_start + cigar.ref_iv.length
 
-                    if (junction_stop < 0) or (junction_stop > self.length):
+                    if (junction_stop < 0) or (junction_start > self.length):
                         # If any of the junctions start or end outside of the
                         # region, skip it
                         continue
@@ -293,9 +293,8 @@ def wasabiplot(bam_filename, chrom, start, stop, strand, log_base=10,
                            text_kws=text_kws, patch_kws=patch_kws)
     if log_base is not None:
         yticks = [int(ytick) for ytick in ax.get_yticks()]
-        yticklabels = ['${log_base}^{{{exponent}}}$'.format(log_base=log_base,
-                                                        exponent=ytick)
-                       for ytick in yticks]
+        yticklabels = ['${log_base}^{{{exponent}}}$'.format(
+            log_base=log_base, exponent=ytick) for ytick in yticks]
         ax.set(yticklabels=yticklabels, yticks=yticks)
 
     if ax.is_last_row():
